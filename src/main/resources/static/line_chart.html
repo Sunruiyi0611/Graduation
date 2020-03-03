@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>折线图</title>
+    <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+    <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+</head>
+<body>
+
+<div id="form-div">
+    <form id="form1" onsubmit="return false" action="##" method="get">
+        <p>地  点：<input name="loc" type="text" id="txtLoc" tabindex="1" size="15" value=""/></p>
+        <p>方  向：<input name="dir" type="text" id="txtDir" tabindex="2" size="16" value=""/></p>
+        <p>时  间：<input name="tim" type="text" id="txtTim" tabindex="3" size="16" value=""/></p>
+        <p><input type="button" value="查询" onclick="queryEntireResult()">&nbsp;<input type="reset" value="重置"></p>
+    </form>
+</div>
+<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+<div id="main" style="width: 600px;height:400px;"></div>
+<script type="text/javascript">
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
+
+    // 指定图表的配置项和数据
+    var option = {
+        title: {
+            text: '人数时间折线图'
+        },
+        tooltip: {},
+        xAxis: {
+            type: 'category',
+            name: '时间点',
+            data: []
+        },
+        yAxis: {
+            name: '人数',
+            type: 'value'
+        },
+        series: [{
+            data: [],
+            type: 'line'
+        }]
+    };
+
+
+    var names = [];    //类别数组（实际用来盛放X轴坐标值）
+    var people = [];
+    function queryEntireResult() {
+        myChart.showLoading();
+        $.ajax({
+            //几个参数需要注意一下
+            type: "GET",//方法类型
+            dataType: "json",//预期服务器返回的数据类型
+            url: "/getEntireResult" ,//url
+            async : true ,
+            data: $('#form1').serialize(),
+            success: function (results) {
+                $.each(results.res, function (index, item) {
+                    names.push(item.specific_time);    //挨个取出类别并填入类别数组
+                    people.push(item.people_amoumt);
+                });
+                myChart.hideLoading();
+                myChart.setOption({        //加载数据图表
+                    xAxis: {
+                        data: names
+                    },
+                    series: {
+                        data: people
+                    }
+                });
+            },
+            error : function(XMLHttpRequest, textStatus, errorThrown) {
+                alert(XMLHttpRequest.status);
+                alert(XMLHttpRequest.readyState);
+                alert(textStatus);
+                alert("失败啦！");
+            }
+        });
+    }
+    myChart.setOption(option);
+</script>
+</body>
+</html>
