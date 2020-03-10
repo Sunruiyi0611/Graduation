@@ -25,28 +25,51 @@
     // 指定图表的配置项和数据
     var option = {
         title: {
-            text: '人数时间折线图'
+            text: '时间数量折线图'
         },
         tooltip: {},
+        legend: {
+            data:["人","自行车","汽车","电动车"]
+        },
         xAxis: {
             type: 'category',
             name: '时间点',
             data: []
         },
         yAxis: {
-            name: '人数',
+            name: '数量',
             type: 'value'
         },
-        series: [{
-            data: [],
-            type: 'line'
-        }]
+        series: [
+            {
+                name:'人',
+                data: [],
+                type: 'line'
+            },
+            {
+                name:'自行车',
+                type:'line',
+                data:[]
+            },
+            {
+                name:'汽车',
+                data: [],
+                type: 'line'
+            },
+            {
+                name:'电动车',
+                data: [],
+                type: 'line'
+            }
+        ]
     };
 
-
-    var names = [];    //类别数组（实际用来盛放X轴坐标值）
-    var people = [];
     function queryEntireResult() {
+        var names = [];    //类别数组（实际用来盛放X轴坐标值）
+        var people = [];
+        var bike = [];
+        var car = [];
+        var electrombile = [];
         myChart.showLoading();
         $.ajax({
             //几个参数需要注意一下
@@ -59,15 +82,21 @@
                 $.each(results.res, function (index, item) {
                     names.push(item.specific_time);    //挨个取出类别并填入类别数组
                     people.push(item.people_amoumt);
+                    bike.push(item.bike_amount);
+                    car.push(item.car_amount);
+                    electrombile.push(item.electrombile_amount);
                 });
+                var columnValue = new Array();
+                columnValue.push(eval('(' + ("{'name':'"+"人"+"','type':'line','data':["+people+"]}") + ')'));
+                columnValue.push(eval('(' + ("{'name':'"+"自行车"+"','type':'line','data':["+bike+"]}") + ')'));
+                columnValue.push(eval('(' + ("{'name':'"+"汽车"+"','type':'line','data':["+car+"]}") + ')'));
+                columnValue.push(eval('(' + ("{'name':'"+"电动车"+"','type':'line','data':["+electrombile+"]}") + ')'));
                 myChart.hideLoading();
                 myChart.setOption({        //加载数据图表
                     xAxis: {
                         data: names
                     },
-                    series: {
-                        data: people
-                    }
+                    series: columnValue
                 });
             },
             error : function(XMLHttpRequest, textStatus, errorThrown) {
