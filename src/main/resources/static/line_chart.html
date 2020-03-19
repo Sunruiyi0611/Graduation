@@ -10,10 +10,16 @@
 
 <div id="form-div">
     <form id="form1" onsubmit="return false" action="##" method="get">
-        <p>地  点：<input name="loc" type="text" id="txtLoc" tabindex="1" size="15" value=""/></p>
-        <p>方  向：<input name="dir" type="text" id="txtDir" tabindex="2" size="16" value=""/></p>
-        <p>时  间：<input name="tim" type="text" id="txtTim" tabindex="3" size="16" value=""/></p>
-        <p><input type="button" value="查询" onclick="queryEntireResult()">&nbsp;<input type="reset" value="重置"></p>
+        <p>地  点: <input name="loc" type="text" id="txtLoc" tabindex="1" size="15" value=""/></p>
+        <p>方  向: <input name="dir" type="text" id="txtDir" tabindex="2" size="16" value=""/></p>
+        <p>时  间: <input name="tim" type="text" id="txtTim" tabindex="3" size="16" value="" list="timeList"/></p>
+        <datalist id="timeList">
+            <option>周中</option>
+            <option>周末</option>
+            <option>未确定</option>
+        </datalist>
+        <p><input type="button" value="查询" onclick="queryEntireResult()">&nbsp;
+            <input type="reset" value="重置"></p>
     </form>
 </div>
 <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
@@ -75,11 +81,11 @@
             //几个参数需要注意一下
             type: "GET",//方法类型
             dataType: "json",//预期服务器返回的数据类型
-            url: "/getEntireResult" ,//url
+            url: "/line/getEntireResult2" ,//url
             async : true ,
             data: $('#form1').serialize(),
             success: function (results) {
-                $.each(results.res, function (index, item) {
+                $.each(results.res.amountList, function (index, item) {
                     names.push(item.specific_time);    //挨个取出类别并填入类别数组
                     people.push(item.people_amoumt);
                     bike.push(item.bike_amount);

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>饼状图</title>
+    <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+    <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+</head>
+<body>
+<div id="form-div">
+    <form id="form1" onsubmit="return false" action="##" method="get">
+        <p>地     点: <input name="loc" type="text" id="txtLoc" tabindex="1" size="15" value=""/></p>
+        <p>方     向: <input name="dir" type="text" id="txtDir" tabindex="2" size="16" value=""/></p>
+        <p>时     间: <input name="tim" type="text" id="txtTim" tabindex="3" size="16" value="" list="timeList"/></p>
+        <datalist id="timeList">
+            <option>周中</option>
+            <option>周末</option>
+            <option>未确定</option>
+        </datalist>
+        <p>起始时间: <input name="start" type="text" id="txtStart" tabindex="4" size="16" value=""/></p>
+        <p>终止时间: <input name="end" type="text" id="txtEnd" tabindex="5" size="16" value=""/></p>
+        <p><input type="button" value="查询" onclick="queryPieData()">&nbsp;<input type="reset" value="重置"></p>
+    </form>
+</div>
+<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+<div id="main" style="width: 600px;height:400px;"></div>
+
+<script type="text/javascript">
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
+    var option = {
+        title: {
+            text: '',
+            subtext: '',
+            left: 'center'
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: '{a} <br/>{b} : {c} ({d}%)'
+        },
+        legend: {
+            orient: 'vertical',
+            left: 'left',
+            data: ['人', '自行车', '汽车', '电动车']
+        },
+        series: [
+            {
+                name: '人车分布',
+                type: 'pie',
+                radius: '55%',
+                center: ['50%', '60%'],
+                data: [],
+                emphasis: {
+                    itemStyle: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }
+        ]
+    };
+
+    function queryPieData(){
+        myChart.showLoading();
+        $.ajax({
+            //几个参数需要注意一下
+            type: "GET",//方法类型
+            dataType: "json",//预期服务器返回的数据类型
+            url: "/pie/getPieData" ,//url
+            async : true ,
+            data: $('#form1').serialize(),
+            success: function (results) {
+                myChart.hideLoading();
+                var title = getTitle();
+                var subtitle = getSubtitle();
+                myChart.setOption({        //加载数据图表
+                    title: {
+                        text: title,
+                        subtext: subtitle,
+                        left: 'center'
+                    },
+                    series: {
+                        data:results.amountList
+                    }
+                });
+            },
+            error : function(XMLHttpRequest, textStatus, errorThrown) {
+                alert(XMLHttpRequest.status);
+                alert(XMLHttpRequest.readyState);
+                alert(textStatus);
+                alert("失败啦！");
+            }
+        });
+
+    }
+
+    function getTitle() {
+        var form = document.getElementById('form1');
+        var inputs = form.getElementsByTagName("input");
+        var string = "";
+        for (var i = 0; i < 3; i++) {
+            // console.log(inputs[i].value);
+            string += inputs[i].value + " ";
+
+        }
+        string +="数量比例"
+        return string;
+    }
+
+    function getSubtitle() {
+        var form = document.getElementById('form1');
+        var inputs = form.getElementsByTagName("input");
+        var string = inputs[3].value +" - " +inputs[4].value ;
+        return string;
+    }
+    myChart.setOption(option);
+</script>
+
+</body>
+</html>
