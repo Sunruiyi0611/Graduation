@@ -44,4 +44,33 @@ public interface AmountDataDao {
                                        @Param("start") float start,
                                        @Param("end") float end);
 
+    @Select("SELECT SUM(people_amount), " +
+            "SUM(bike_amount), " +
+            "SUM(car_amount), " +
+            "SUM(electrombile_amount) " +
+            "FROM " + VIDEO +
+            " WHERE location=#{loc}" +
+            " AND time=#{time}" +
+            " AND specific_time>=#{start}" +
+            " AND specific_time<=#{end}")
+    AmountData getWeekAmountDataWithoutDir(@Param("loc") String location,
+                                              @Param("time") String time,
+                                              @Param("start") float start,
+                                              @Param("end") float end);
+
+    @Select("SELECT SUM(people_amount), " +
+            "SUM(bike_amount), " +
+            "SUM(car_amount), " +
+            "SUM(electrombile_amount) " +
+            "FROM " + VIDEO +
+            " WHERE location=#{loc}" +
+            " AND direction=#{dir}" +
+            " AND time=#{time}" +
+            " AND specific_time>=#{start}" +
+            " AND specific_time<=#{end}")
+    AmountData getWeekAmountData(@Param("loc") String location,
+                                    @Param("dir") String direction,
+                                    @Param("time") String time,
+                                    @Param("start") float start,
+                                    @Param("end") float end);
 }

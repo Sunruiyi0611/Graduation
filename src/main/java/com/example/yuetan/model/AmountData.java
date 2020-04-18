@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class AmountData {   //pie chart
+public class AmountData {   //pie & bar chart
 
     int people;          //记录人数
 
