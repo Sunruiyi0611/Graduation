@@ -1,0 +1,153 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>不同天数据对比柱状图</title>
+    <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+    <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+</head>
+<body>
+<div id="form-div">
+    <form id="form1" onsubmit="return false" action="##" method="get">
+        <label for="txtLoc">地  点: </label>
+        <input name="loc" type="text" id="txtLoc" tabindex="1" size="15" value="" list="locationList"/>
+        <datalist id="locationList">
+            <option th:each="location: ${locations}" th:text="${location.name}" th:value="${location.name}"></option>
+        </datalist>
+        <label for="txtDir">方  向: </label>
+        <input name="dir" type="text" id="txtDir" tabindex="2" size="16" value=""/>
+        <label for="txtStart">起 始 时 间: </label>
+        <input name="start" type="text" id="txtStart" tabindex="3" size="16" value="" />
+        <label for="txtEnd">结 束 时 间: </label>
+        <input name="end" type="text" id="txtEnd" tabindex="4" size="16" value="" />
+        <input type="button" value="查询" onclick="queryBarResult()">&nbsp;
+        <input type="reset" value="重置">
+    </form>
+</div>
+
+<div id="main" style="width: 600px;height:400px;"></div>
+
+<script type="text/javascript">
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
+
+    var option = {
+        title: {
+            text: '',
+            left: 'center'
+        },
+        color: ['#003366','#e5323e'],
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            }
+        },
+        legend: {
+            data:["周中","周末"],
+            orient: 'vertical',
+            left: 'right',
+        },
+        toolbox: {
+            show: true,
+            orient: 'vertical',
+            left: 'right',
+            top: 'center'
+        },
+        xAxis: [
+            {
+                type: 'category',
+                axisTick: {show: false},
+                data: ["人","自行车","汽车","电动车"]
+            }
+        ],
+        yAxis: [
+            {
+                name: '数量',
+                type: 'value',
+                data: []
+            }
+        ],
+        series: [
+            {
+                name: '周中',
+                type: 'bar',
+                barGap: 0,
+                label: {
+                    show: true
+                },
+                data: []
+            },
+            {
+                name: '周末',
+                type: 'bar',
+                label: {
+                    show: true
+                },
+                data: []
+            }
+        ]
+    };
+
+    function queryBarResult() {
+        var midweek = [];
+        var weekend = [];
+        myChart.showLoading();
+        $.ajax({
+            //几个参数需要注意一下
+            type: "GET",//方法类型
+            dataType: "json",//预期服务器返回的数据类型
+            url: "/bar/getBarData" ,//url
+            async : true ,
+            data: $('#form1').serialize(),
+            success: function (results) {
+                midweek = getAmountData(results.res.midweek);
+                weekend = getAmountData(results.res.weekend);
+
+                var columnValue = new Array();
+                columnValue.push(eval('(' + ("{'name':'"+"周中"+"','type':'bar','barGap': '0','data':["+midweek+"]}") + ')'));
+                columnValue.push(eval('(' + ("{'name':'"+"周末"+"','type':'bar','data':["+weekend+"]}") + ')'));
+                myChart.hideLoading();
+                var title = getTitle();
+                myChart.setOption({        //加载数据图表
+                    title: {
+                        text: title,
+                        left: 'center'
+                    },
+                    series: columnValue
+                });
+            },
+            error : function(XMLHttpRequest, textStatus, errorThrown) {
+                alert(XMLHttpRequest.status);
+                alert(XMLHttpRequest.readyState);
+                alert(textStatus);
+                alert("失败啦！");
+            }
+        });
+    }
+
+    function getTitle() {
+        var form = document.getElementById('form1');
+        var inputs = form.getElementsByTagName("input");
+        var string = "";
+        for (var i = 0; i < 2; i++) {
+            // console.log(inputs[i].value);
+            string += inputs[i].value + " ";
+
+        }
+        string +="周中/周中 数量对比";
+        return string;
+    }
+
+    function getAmountData(res){
+        var data = [];
+        data.push(res.people);
+        data.push(res.bike);
+        data.push(res.car);
+        data.push(res.electrombile);
+        return data;
+    }
+    myChart.setOption(option);
+</script>
+</body>
+</html>

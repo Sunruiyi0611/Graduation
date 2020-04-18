@@ -1,0 +1,269 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>时间数量柱状图</title>
+    <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+    <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+</head>
+</head>
+<body>
+<div id="form-div">
+    <form id="form1" onsubmit="return false" action="##" method="get">
+        <label for="txtLoc">地  点: </label>
+        <input name="loc" type="text" id="txtLoc" tabindex="1" size="15" value="" list="locationList"/>
+        <datalist id="locationList">
+            <option th:each="location: ${locations}" th:text="${location.name}" th:value="${location.name}"></option>
+        </datalist>
+        <label for="txtDir">方  向: </label>
+        <input name="dir" type="text" id="txtDir" tabindex="2" size="16" value=""/>
+        <label for="txtTim">时  间: </label>
+        <input name="tim" type="text" id="txtTim" tabindex="3" size="16" value="" list="timeList"/>
+        <datalist id="timeList">
+            <option>周中</option>
+            <option>周末</option>
+            <option>未确定</option>
+        </datalist>
+        <input type="button" value="查询" onclick="queryEntireResult()">&nbsp;
+        <input type="reset" value="重置">
+    </form>
+</div>
+
+<div id="main" style="width: 600px;height:400px;"></div>
+
+<script type="text/javascript">
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
+
+    // 指定图表的配置项和数据
+    var posList = [
+        'left', 'right', 'top', 'bottom',
+        'inside',
+        'insideTop', 'insideLeft', 'insideRight', 'insideBottom',
+        'insideTopLeft', 'insideTopRight', 'insideBottomLeft', 'insideBottomRight'
+    ];
+
+    // app.configParameters = {
+    //     rotate: {
+    //         min: -90,
+    //         max: 90
+    //     },
+    //     align: {
+    //         options: {
+    //             left: 'left',
+    //             center: 'center',
+    //             right: 'right'
+    //         }
+    //     },
+    //     verticalAlign: {
+    //         options: {
+    //             top: 'top',
+    //             middle: 'middle',
+    //             bottom: 'bottom'
+    //         }
+    //     },
+    //     position: {
+    //         options: echarts.util.reduce(posList, function (map, pos) {
+    //             map[pos] = pos;
+    //             return map;
+    //         }, {})
+    //     },
+    //     distance: {
+    //         min: 0,
+    //         max: 100
+    //     }
+    // };
+    //
+    // app.config = {
+    //     rotate: 90,
+    //     align: 'left',
+    //     verticalAlign: 'middle',
+    //     position: 'insideBottom',
+    //     distance: 15,
+    //     onChange: function () {
+    //         var labelOption = {
+    //             normal: {
+    //                 rotate: app.config.rotate,
+    //                 align: app.config.align,
+    //                 verticalAlign: app.config.verticalAlign,
+    //                 position: app.config.position,
+    //                 distance: app.config.distance
+    //             }
+    //         };
+    //         myChart.setOption({
+    //             series: [{
+    //                 label: labelOption
+    //             }, {
+    //                 label: labelOption
+    //             }, {
+    //                 label: labelOption
+    //             }, {
+    //                 label: labelOption
+    //             }]
+    //         });
+    //     }
+    // };
+    //
+    //
+    // var labelOption = {
+    //     show: true,
+    //     position: app.config.position,
+    //     distance: app.config.distance,
+    //     align: app.config.align,
+    //     verticalAlign: app.config.verticalAlign,
+    //     rotate: app.config.rotate,
+    //     formatter: '{c}  {name|{a}}',
+    //     fontSize: 16,
+    //     rich: {
+    //         name: {
+    //             textBorderColor: '#fff'
+    //         }
+    //     }
+    // };
+
+    var option = {
+        title: {
+            text: '',
+            left: 'center'
+        },
+        color: ['#003366', '#006699', '#4cabce', '#e5323e'],
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            }
+        },
+        legend: {
+            data:["人","自行车","汽车","电动车"]
+        },
+        toolbox: {
+            show: true,
+            orient: 'vertical',
+            left: 'right',
+            top: 'center',
+            feature: {
+                mark: {show: true},
+                dataView: {show: true, readOnly: false},
+                magicType: {show: true, type: ['line', 'bar', 'stack', 'tiled']},
+                restore: {show: true},
+                saveAsImage: {show: true}
+            }
+        },
+        xAxis: [
+            {
+                type: 'category',
+                axisTick: {show: false},
+                name: '时间点',
+                data: []
+            }
+        ],
+        yAxis: [
+            {
+                name: '数量',
+                type: 'value'
+            }
+        ],
+        series: [
+            {
+                name: '人',
+                type: 'bar',
+                barGap: 0,
+                label: {
+                    show: true
+                    //position: 'inside'
+                },
+                //label: labelOption,
+                data: []
+            },
+            {
+                name: '自行车',
+                type: 'bar',
+                label: {
+                    show: true
+                },
+                //label: labelOption,
+                data: []
+            },
+            {
+                name: '汽车',
+                type: 'bar',
+                label: {
+                    show: true
+                },
+                //label: labelOption,
+                data: []
+            },
+            {
+                name: '电动车',
+                type: 'bar',
+                label: {
+                    show: true
+                },
+                //label: labelOption,
+                data: []
+            }
+        ]
+    };
+
+    function queryEntireResult() {
+        var names = [];    //类别数组（实际用来盛放X轴坐标值）
+        var people = [];
+        var bike = [];
+        var car = [];
+        var electrombile = [];
+        myChart.showLoading();
+        $.ajax({
+            //几个参数需要注意一下
+            type: "GET",//方法类型
+            dataType: "json",//预期服务器返回的数据类型
+            url: "/line/getEntireResult2" ,//url
+            async : true ,
+            data: $('#form1').serialize(),
+            success: function (results) {
+                $.each(results.res.amountList, function (index, item) {
+                    names.push(item.specific_time);    //挨个取出类别并填入类别数组
+                    people.push(item.people_amoumt);
+                    bike.push(item.bike_amount);
+                    car.push(item.car_amount);
+                    electrombile.push(item.electrombile_amount);
+                });
+                var columnValue = new Array();
+                columnValue.push(eval('(' + ("{'name':'"+"人"+"','type':'bar','barGap': '0','data':["+people+"]}") + ')'));
+                columnValue.push(eval('(' + ("{'name':'"+"自行车"+"','type':'bar','data':["+bike+"]}") + ')'));
+                columnValue.push(eval('(' + ("{'name':'"+"汽车"+"','type':'bar','data':["+car+"]}") + ')'));
+                columnValue.push(eval('(' + ("{'name':'"+"电动车"+"','type':'bar','data':["+electrombile+"]}") + ')'));
+                myChart.hideLoading();
+                //var title = getTitle();
+                myChart.setOption({        //加载数据图表
+                    xAxis: {
+                        data: names
+                    },
+                    series: columnValue
+                });
+            },
+            error : function(XMLHttpRequest, textStatus, errorThrown) {
+                alert(XMLHttpRequest.status);
+                alert(XMLHttpRequest.readyState);
+                alert(textStatus);
+                alert("失败啦！");
+            }
+        });
+    }
+
+    function getTitle() {
+        var form = document.getElementById('form1');
+        var inputs = form.getElementsByTagName("input");
+        var string = "";
+        for (var i = 0; i < inputs.length-2; i++) {
+            // console.log(inputs[i].value);
+            string += inputs[i].value + " ";
+
+        }
+        string +="数量"
+        return string;
+    }
+    myChart.setOption(option);
+</script>
+
+</body>
+</html>
