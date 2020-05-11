@@ -25,4 +25,6 @@ public class EntireResult {
 
     float specific_time;        //录制具体时间点（均为10分钟长度）
 
+
+
 }

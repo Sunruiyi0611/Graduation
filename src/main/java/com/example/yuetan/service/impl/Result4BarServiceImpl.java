@@ -27,7 +27,7 @@ public class Result4BarServiceImpl implements Result4BarService {
         AmountData weekend = null;
         Result4Bar result4Bar = null;
 
-        try {
+//        try {
             if (!direction.isEmpty())
             {
                 midweek = amountDataDao.getWeekAmountData(location,direction,MIDWEEK,start,end);
@@ -49,9 +49,9 @@ public class Result4BarServiceImpl implements Result4BarService {
                     .weekend(weekend)
                     .build();
 
-        } catch (Exception e) {
-            LOG.error("query amount_data for bar chart failed | "+e);
-        }
+//        } catch (Exception e) {
+//            LOG.error("query amount_data for bar chart failed | "+e);
+//        }
         return result4Bar;
     }
 }

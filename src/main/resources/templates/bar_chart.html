@@ -1,31 +1,103 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>不同天数据对比柱状图</title>
+    <link rel="canonical" href="https://v4.bootcss.com/docs/examples/dashboard/">
+    <link href="/css/dashboard.css" rel="stylesheet">
     <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
     <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/js/feather.min.js"></script>
+    <script src="/js/result_table.js"></script>
+    <script src="/js/macarons.js"></script>
+    <script src="/js/checkParam.js"></script>
 </head>
 <body>
-<div id="form-div">
-    <form id="form1" onsubmit="return false" action="##" method="get">
-        <label for="txtLoc">地  点: </label>
-        <input name="loc" type="text" id="txtLoc" tabindex="1" size="15" value="" list="locationList"/>
-        <datalist id="locationList">
-            <option th:each="location: ${locations}" th:text="${location.name}" th:value="${location.name}"></option>
-        </datalist>
-        <label for="txtDir">方  向: </label>
-        <input name="dir" type="text" id="txtDir" tabindex="2" size="16" value=""/>
-        <label for="txtStart">起 始 时 间: </label>
-        <input name="start" type="text" id="txtStart" tabindex="3" size="16" value="" />
-        <label for="txtEnd">结 束 时 间: </label>
-        <input name="end" type="text" id="txtEnd" tabindex="4" size="16" value="" />
-        <input type="button" value="查询" onclick="queryBarResult()">&nbsp;
-        <input type="reset" value="重置">
-    </form>
-</div>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">月坛南街公共空间数据分析系统</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
 
-<div id="main" style="width: 600px;height:400px;"></div>
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+            <div class="sidebar-sticky">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/index.html">
+                            <span data-feather="home"></span>
+                            首页 <span class="sr-only"></span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/index/line">
+                            <span data-feather="file"></span>
+                            时间数量
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/index/line-bar">
+                            <span data-feather="file"></span>
+                            时间数量（柱状图）
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/index/pie">
+                            <span data-feather="shopping-cart"></span>
+                            数量比例
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/index/bar">
+                            <span data-feather="users"></span>
+                            周中周末数量对比
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">周中周末数量对比-柱状图</h1>
+                <div id="form-div">
+                    <form id="form1" onsubmit="return false" action="##" method="get">
+                        <label for="txtLoc">地  点: </label>
+                        <input name="loc" type="text" id="txtLoc" tabindex="1" size="15" value="" list="locationList"/>
+                        <datalist id="locationList">
+                            <option th:each="location: ${locations}" th:text="${location.name}" th:value="${location.name}"></option>
+                        </datalist>
+                        <label for="txtDir">方  向: </label>
+                        <input name="dir" type="text" id="txtDir" tabindex="2" size="12" value="" list="directionList"/>
+                        <datalist id="directionList">
+                            <option th:each="direction: ${directions}" th:text="${direction.name}" th:value="${direction.name}"></option>
+                        </datalist>
+                        <label for="txtStart">开 始 时 间: </label>
+                        <input name="start" type="text" id="txtStart" tabindex="3" size="10" value="" />
+                        <label for="txtEnd">结 束 时 间: </label>
+                        <input name="end" type="text" id="txtEnd" tabindex="4" size="10" value="" />
+                        <input type="button" value="查询" onclick="query()">&nbsp;
+                        <input type="reset" value="重置">
+                    </form>
+                </div>
+            </div>
+
+            <div id="main" style="width: 750px;height:500px;"></div>
+
+
+        </main>
+    </div>
+</div>
 
 <script type="text/javascript">
     // 基于准备好的dom，初始化echarts实例
@@ -34,8 +106,10 @@
     var option = {
         title: {
             text: '',
-            left: 'center'
+            left: 'center',
+            color:'#3f577a'
         },
+        //color: ['#b6a2de','#5ab1ef'],
         color: ['#003366','#e5323e'],
         tooltip: {
             trigger: 'axis',
@@ -46,13 +120,18 @@
         legend: {
             data:["周中","周末"],
             orient: 'vertical',
-            left: 'right',
+            left: 'right'
         },
         toolbox: {
             show: true,
             orient: 'vertical',
             left: 'right',
-            top: 'center'
+            top: 'center',
+            feature: {
+                mark: {show: true},
+                dataView: {show: true, readOnly: false},
+                saveAsImage: {show: true}
+            }
         },
         xAxis: [
             {
@@ -89,6 +168,13 @@
         ]
     };
 
+    function query() {
+        if (checkLoc()!=false && checkStart()!=false && checkEnd()!= false) {
+            queryBarResult();
+        }
+
+    }
+
     function queryBarResult() {
         var midweek = [];
         var weekend = [];
@@ -101,20 +187,56 @@
             async : true ,
             data: $('#form1').serialize(),
             success: function (results) {
+                $("table").remove();
+                if (results.errMsg!="Success") {
+                    alert("查询失败，请联系管理员！");
+                    myChart.hideLoading();
+                    return;
+                }
                 midweek = getAmountData(results.res.midweek);
                 weekend = getAmountData(results.res.weekend);
-
-                var columnValue = new Array();
-                columnValue.push(eval('(' + ("{'name':'"+"周中"+"','type':'bar','barGap': '0','data':["+midweek+"]}") + ')'));
-                columnValue.push(eval('(' + ("{'name':'"+"周末"+"','type':'bar','data':["+weekend+"]}") + ')'));
                 myChart.hideLoading();
+                if (form1.dir.value ==""){
+                    $('[role="main"]').append("<h2>查询结果列表-周中</h2>");
+                    showTableWithDir(results.midList);
+                    $('[role="main"]').append("<h2>查询结果列表-周末</h2>");
+                    showTableWithDir(results.weekendList);
+                } else {
+                    $('[role="main"]').append("<h2>查询结果列表-周中</h2>");
+                    showTable(results.midList);
+                    $('[role="main"]').append("<h2>查询结果列表-周末</h2>");
+                    showTable(results.weekendList);
+                }
                 var title = getTitle();
+                var subtitle= getSubtitle();
                 myChart.setOption({        //加载数据图表
                     title: {
                         text: title,
+                        subtext: subtitle,
                         left: 'center'
                     },
-                    series: columnValue
+                    series: [
+                        {
+                            name:'周中',
+                            data: midweek,
+                            type: 'bar',
+                            markPoint: {
+                                data: [
+                                    {type: 'max', name: '最大值'}
+                                ]
+                            }
+                        },
+                        {
+                            name:'周末',
+                            data: weekend,
+                            type: 'bar',
+                            markPoint: {
+                                data: [
+                                    {type: 'max', name: '最大值'}
+                                ]
+                            }
+                        }
+                    ]
                 });
             },
             error : function(XMLHttpRequest, textStatus, errorThrown) {
@@ -132,7 +254,9 @@
         var string = "";
         for (var i = 0; i < 2; i++) {
             // console.log(inputs[i].value);
-            string += inputs[i].value + " ";
+            if((inputs[i].value !="无") ){
+                string += inputs[i].value + " ";
+            }
 
         }
         string +="周中/周中 数量对比";
@@ -146,6 +270,12 @@
         data.push(res.car);
         data.push(res.electrombile);
         return data;
+    }
+    function getSubtitle() {
+        var form = document.getElementById('form1');
+        var inputs = form.getElementsByTagName("input");
+        var string = inputs[2].value +"：00 - " +inputs[3].value + "：00" ;
+        return string;
     }
     myChart.setOption(option);
 </script>

@@ -22,10 +22,8 @@ public class Result4PieServiceImpl implements Result4PieService {
 
         AmountData amountData = null;
         Result4Pie result4Pie = null;
-
-        try {
+//        try {
             if (!direction.isEmpty()) {
-                //TODO 如何区分 没有查询数据和错误
                 //没有查询到 只有amountData为空
                 amountData = amountDataDao.getAmountData(location,direction,time,start,end);
             }
@@ -42,10 +40,10 @@ public class Result4PieServiceImpl implements Result4PieService {
                     .amountData(amountData)
                     .end(end)
                     .build();
-        } catch (Exception e) {
-            LOG.error("query amount_data failed |"+e);
-            //查询出现错误，全部为null
-        }
+//        } catch (Exception e) {
+//            LOG.error("query amount_data failed |"+e);
+//            //查询出现错误，全部为null
+//        }
 
         return result4Pie;
     }

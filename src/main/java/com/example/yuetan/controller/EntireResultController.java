@@ -4,8 +4,10 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.example.yuetan.model.EntireResult;
 import com.example.yuetan.model.EntireResult2;
+import com.example.yuetan.model.ResultList;
 import com.example.yuetan.service.EntireResult2Service;
 import com.example.yuetan.service.EntireResultService;
+import com.example.yuetan.service.ResultListService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.example.yuetan.util.Config.FAILED;
 import static com.example.yuetan.util.Config.SUCCESS;
 
 @Controller
@@ -31,6 +34,9 @@ public class EntireResultController {
 
     @Autowired
     private EntireResult2Service entireResult2Service;
+
+    @Autowired
+    private ResultListService resultListService;
 
     @ResponseBody
     @RequestMapping("/getEntireResult")
@@ -64,21 +70,27 @@ public class EntireResultController {
         }
 
         EntireResult2 entireResult2 = null;
+        List<ResultList> resultList = null;
         try {
             entireResult2 = entireResult2Service.getEntireResult(loc,dir,tim);
+            if (dir.equals("")) {
+                resultList=resultListService.getResultList(loc,tim);
+                logger.info("return resultsList={}",resultList.toString());
+            }
             logger.info("return results={}",entireResult2.toString());
             msg = SUCCESS;
         } catch (Exception e) {
-            msg= e.getMessage();
+            msg= FAILED;
             logger.error("get entire_result error |"+e);
         }
-
-        //JSONObject jsonObject = JSONObject.parseObject(entireResult2));
-        //JSONArray array= JSONArray.parseArray(JSONObject.toJSONString(entireResult2));
 
         Map<String,Object> resultMap =new HashMap<String, Object>();
         resultMap.put("res",entireResult2);
         resultMap.put("errMsg",msg);
+        if (dir.equals(""))
+        {
+            resultMap.put("resList",resultList);
+        }
 
         return resultMap;
     }

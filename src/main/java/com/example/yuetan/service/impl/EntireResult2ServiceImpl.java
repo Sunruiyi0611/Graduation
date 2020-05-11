@@ -24,7 +24,8 @@ public class EntireResult2ServiceImpl implements EntireResult2Service {
     public EntireResult2 getEntireResult(String location, String direction, String time) {
 
         List<SpecTimeAmount> amountlist = null;
-        try {
+        EntireResult2 entireResult2 = null;
+//        try {
             if (!direction.equals("")){
                 amountlist = specTimeAmountDao.getSpecTimeAmountWithLocDirTime(location,direction,time);
             }
@@ -34,17 +35,19 @@ public class EntireResult2ServiceImpl implements EntireResult2Service {
             if(!amountlist.isEmpty()){
                 Collections.sort(amountlist);
             }
-            LOG.info("query amount_list from db:"+amountlist);
-        } catch (Exception e) {
-            LOG.error(e.getMessage());
-        }
+            entireResult2 = EntireResult2.builder()
+                    .location(location)
+                    .direction(direction)
+                    .time(time)
+                    .amountList(amountlist)
+                    .build();
 
-        EntireResult2 entireResult2 = EntireResult2.builder()
-                .location(location)
-                .direction(direction)
-                .time(time)
-                .amountList(amountlist)
-                .build();
+            LOG.info("query amount_list from db:"+amountlist);
+//        } catch (Exception e) {
+//            LOG.error(e.getMessage());
+//        }
+
+
 
         return entireResult2;
     }

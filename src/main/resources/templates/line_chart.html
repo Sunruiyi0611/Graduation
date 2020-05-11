@@ -1,79 +1,177 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>折线图</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>时间数量折线图</title>
+    <link rel="canonical" href="https://v4.bootcss.com/docs/examples/dashboard/">
+    <link href="/css/dashboard.css" rel="stylesheet">
     <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
     <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+<!--    <link href="/css/bootstrap.min.css" rel="stylesheet">-->
+<!--    <script src="/js/bootstrap.bundle.min.js"></script>-->
+
+    <script src="/js/feather.min.js"></script>
+<!--    <script src="/js/dashboard.js"></script>-->
+    <script src="/js/vintage.js"></script>
+    <script src="/js/result_table.js"></script>
+    <script src="/js/checkParam.js"></script>
+
 </head>
 <body>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+<!--            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">-->
+<!--                <span class="sr-only">Toggle navigation</span>-->
+<!--                <span class="icon-bar"></span>-->
+<!--                <span class="icon-bar"></span>-->
+<!--                <span class="icon-bar"></span>-->
+<!--            </button>-->
+            <a class="navbar-brand" href="#">月坛南街公共空间数据分析系统</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<!--<nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">-->
+<!--    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">月坛南街公共空间数据分析系统</a>-->
+<!--    <ul class="navbar-nav px-3">-->
+<!--        <li class="nav-item text-nowrap">-->
+<!--            <a class="nav-link" href="#">Welcome</a>-->
+<!--        </li>-->
+<!--    </ul>-->
+<!--</nav>-->
 
-<div id="form-div">
-    <form id="form1" onsubmit="return false" action="##" method="get">
-        <p>地  点: <input name="loc" type="text" id="txtLoc" tabindex="1" size="15" value="" list="locationList"/></p>
-        <datalist id="locationList">
-            <option th:each="location: ${locations}" th:text="${location.name}" th:value="${location.name}"></option>
-<!--            <option>北二巷</option>-->
-<!--            <option>北京银行</option>-->
-<!--            <option>北三巷</option>-->
-<!--            <option>二环西侧</option>-->
-<!--            <option>二七剧场</option>-->
-<!--            <option>南二巷</option>-->
-<!--            <option>南横街16</option>-->
-<!--            <option>南横街17</option>-->
-<!--            <option>南横街18</option>-->
-<!--            <option>南横街19</option>-->
-<!--            <option>南横街西</option>-->
-<!--            <option>南礼士路</option>-->
-<!--            <option>南礼士路路口东</option>-->
-<!--            <option>南礼士路路口西</option>-->
-<!--            <option>南六巷</option>-->
-<!--            <option>南七巷</option>-->
-<!--            <option>南三巷</option>-->
-<!--            <option>南四巷</option>-->
-<!--            <option>南五巷</option>-->
-<!--            <option>南一巷</option>-->
-<!--            <option>派出所路口</option>-->
-<!--            <option>派出所路口东</option>-->
-<!--            <option>派出所路口西</option>-->
-<!--            <option>三里河17</option>-->
-<!--            <option>三里河北街</option>-->
-<!--            <option>三里河北街东</option>-->
-<!--            <option>三里河北街西</option>-->
-<!--            <option>三里河东路路口东</option>-->
-<!--            <option>三里河东路路口西</option>-->
-<!--            <option>三里河东路西口东</option>-->
-<!--            <option>三里河东路西口西</option>-->
-        </datalist>
-        <p>方  向: <input name="dir" type="text" id="txtDir" tabindex="2" size="16" value=""/></p>
-        <p>时  间: <input name="tim" type="text" id="txtTim" tabindex="3" size="16" value="" list="timeList"/></p>
-        <datalist id="timeList">
-            <option>周中</option>
-            <option>周末</option>
-            <option>未确定</option>
-        </datalist>
-        <p><input type="button" value="查询" onclick="queryEntireResult()">&nbsp;
-            <input type="reset" value="重置"></p>
-    </form>
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+            <div class="sidebar-sticky">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/index.html">
+                            <span data-feather="home"></span>
+                            首页 <span class="sr-only"></span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/index/line">
+                            <span data-feather="file"></span>
+                            时间数量
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/index/line-bar">
+                            <span data-feather="file"></span>
+                            时间数量（柱状图）
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/index/pie">
+                            <span data-feather="shopping-cart"></span>
+                            数量比例
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/index/bar">
+                            <span data-feather="users"></span>
+                            周中周末数量对比
+                        </a>
+                    </li>
+                </ul>
+
+                <h2 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                    <span>更改数据</span>
+                    <a class="d-flex align-items-center text-muted" href="#" aria-label="Add a new report">
+                        <span data-feather="plus-circle"></span>
+                    </a>
+                </h2>
+                <ul class="nav flex-column mb-2">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <span data-feather="file-text"></span>
+                            添加
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <span data-feather="file-text"></span>
+                            删除
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">时间数量-折线图</h1>
+                <div id="form-div">
+                    <form id="form1" name="form1" onsubmit="return false" action="#" method="get">
+                        <label for="txtLoc">地  点: </label>
+                        <input name="loc" type="text" id="txtLoc" tabindex="1" size="15" value="" list="locationList"/>
+                        <datalist id="locationList">
+                            <option th:each="location: ${locations}" th:text="${location.name}" th:value="${location.name}"></option>
+                        </datalist>
+                        <label for="txtDir">方  向: </label>
+                        <input name="dir" type="text" id="txtDir" tabindex="2" size="16" value="" list="directionList"/>
+                        <datalist id="directionList">
+                            <option th:each="direction: ${directions}" th:text="${direction.name}" th:value="${direction.name}"></option>
+                        </datalist>
+                        <label for="txtTim">时  间: </label>
+                        <input name="tim" type="text" id="txtTim" tabindex="3" size="16" value="" list="timeList"/>
+                        <datalist id="timeList">
+                            <option>周中</option>
+                            <option>周末</option>
+                            <option>未确定</option>
+                        </datalist>
+                        <input type="button" value="查询" onclick="query()">&nbsp;
+                        <input type="reset" value="重置">
+                    </form>
+                </div>
+            </div>
+
+            <div id="main" style="width: 750px;height:500px;"></div>
+
+            <h2>查询结果列表</h2>
+
+        </main>
+    </div>
 </div>
-<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-<div id="main" style="width: 600px;height:400px;"></div>
+
 <script type="text/javascript">
     // 基于准备好的dom，初始化echarts实例
-    var myChart = echarts.init(document.getElementById('main'));
+    var myChart = echarts.init(document.getElementById('main'),'vintage');
 
     // 指定图表的配置项和数据
     var option = {
         title: {
-            text: '时间数量折线图'
+            text: ''
         },
-        tooltip: {},
+        toolbox: {
+            show: true,
+            orient: 'vertical',
+            left: 'right',
+            top: 'center',
+            feature: {
+                mark: {show: true},
+                dataView: {show: true, readOnly: false},
+                saveAsImage: {show: true}
+            }
+        },
         legend: {
-            data:["人","自行车","汽车","电动车"]
+            data:["人","自行车","汽车","电动车"],
+            orient: 'vertical',
+            left: 'right'
         },
         xAxis: {
             type: 'category',
             name: '时间点',
+            //boundaryGap: false,
             data: []
         },
         yAxis: {
@@ -104,6 +202,13 @@
         ]
     };
 
+    function query() {
+        if ( checkLoc()!= false &&checkTime()!=false) {
+            queryEntireResult();
+        }
+
+    }
+
     function queryEntireResult() {
         var names = [];    //类别数组（实际用来盛放X轴坐标值）
         var people = [];
@@ -119,24 +224,102 @@
             async : true ,
             data: $('#form1').serialize(),
             success: function (results) {
+                $("table").remove();
+                if (results.errMsg!="Success") {
+                    alert("查询失败，请联系管理员！");
+                    myChart.hideLoading();
+                    return;
+                }
+                if (results.res.amountList==null){
+                    alert("没有符合的查询结果");
+                    myChart.hideLoading();
+                    return;
+                }
+
                 $.each(results.res.amountList, function (index, item) {
                     names.push(item.specific_time);    //挨个取出类别并填入类别数组
-                    people.push(item.people_amoumt);
+                    people.push(item.people_amount);
                     bike.push(item.bike_amount);
                     car.push(item.car_amount);
                     electrombile.push(item.electrombile_amount);
                 });
-                var columnValue = new Array();
-                columnValue.push(eval('(' + ("{'name':'"+"人"+"','type':'line','data':["+people+"]}") + ')'));
-                columnValue.push(eval('(' + ("{'name':'"+"自行车"+"','type':'line','data':["+bike+"]}") + ')'));
-                columnValue.push(eval('(' + ("{'name':'"+"汽车"+"','type':'line','data':["+car+"]}") + ')'));
-                columnValue.push(eval('(' + ("{'name':'"+"电动车"+"','type':'line','data':["+electrombile+"]}") + ')'));
                 myChart.hideLoading();
+                if (form1.dir.value ==""){
+                    showTableWithDir(results.resList);
+                } else {
+                    showTable(results.res.amountList);
+                }
+                var title = getTitle();
                 myChart.setOption({        //加载数据图表
+                    title: {
+                        text: title,
+                        left: 'center'
+                    },
                     xAxis: {
                         data: names
                     },
-                    series: columnValue
+                    series: [
+                        {
+                            name:'人',
+                            type: 'line',
+                            data: people,
+                            markPoint: {
+                                data: [
+                                    {type: 'max', name: '最大值'}
+                                ]
+                            },
+                            markLine: {
+                                data: [
+                                    {type: 'average', name: '平均值'}
+                                ]
+                            }
+                        },
+                        {
+                            name:'自行车',
+                            type:'line',
+                            data:bike,
+                            markPoint: {
+                                data: [
+                                    {type: 'max', name: '最大值'}
+                                    ]
+                            },
+                            markLine: {
+                                data: [
+                                    {type: 'average', name: '平均值'}
+                                ]
+                            }
+                        },
+                        {
+                            name:'汽车',
+                            type: 'line',
+                            data: car,
+                            markPoint: {
+                                data: [
+                                    {type: 'max', name: '最大值'}
+                                ]
+                            },
+                            markLine: {
+                                data: [
+                                    {type: 'average', name: '平均值'}
+                                ]
+                            }
+                        },
+                        {
+                            name:'电动车',
+                            type: 'line',
+                            data: electrombile,
+                            markPoint: {
+                                data: [
+                                    {type: 'max', name: '最大值'}
+                                ]
+                            },
+                            markLine: {
+                                data: [
+                                    {type: 'average', name: '平均值'}
+                                ]
+                            }
+                        }
+                    ]
                 });
             },
             error : function(XMLHttpRequest, textStatus, errorThrown) {
@@ -147,6 +330,21 @@
             }
         });
     }
+
+    function getTitle() {
+        var form = document.getElementById('form1');
+        var inputs = form.getElementsByTagName("input");
+        var string = "";
+        for (var i = 0; i < 3; i++) {
+            // console.log(inputs[i].value);
+            if((inputs[i].value !="无") && (inputs[i].value !="未确定")){
+                string += inputs[i].value + " ";
+            }
+        }
+        string +="数量变化";
+        return string;
+    }
+
     myChart.setOption(option);
 </script>
 </body>

@@ -2,7 +2,9 @@ package com.example.yuetan.controller;
 
 import com.example.yuetan.model.PieData;
 import com.example.yuetan.model.Result4Pie;
+import com.example.yuetan.model.ResultList;
 import com.example.yuetan.service.Result4PieService;
+import com.example.yuetan.service.ResultListService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.example.yuetan.util.Config.ERR_PARAM;
-import static com.example.yuetan.util.Config.SUCCESS;
+import static com.example.yuetan.util.Config.*;
 
 @Controller
 @RequestMapping("/pie")
@@ -25,6 +26,9 @@ public class PieController {
 
     @Autowired
     private Result4PieService result4PieService;
+
+    @Autowired
+    private ResultListService resultListService;
 
     private static final Logger LOG = LoggerFactory.getLogger(PieController.class);
 
@@ -50,24 +54,27 @@ public class PieController {
             tim = "无";
         }
         Result4Pie result4Pie = null;
+        List list = new ArrayList<PieData>();
+        List<ResultList> resultList=null;
 
         try {
             result4Pie = result4PieService.getResult4Pie(loc, dir, tim, start, end);
             msg = SUCCESS;
             LOG.info("get result for pie | "+ result4Pie.toString());
+            if (result4Pie!=null)
+            {
+                list =toPieDataList(result4Pie);
+            }
+            resultList=resultListService.getPieList(loc, dir, tim, start, end);
+            LOG.info("get result_list |"+resultList);
         } catch (Exception e) {
-            msg= e.getMessage();
+            msg= FAILED;
             LOG.error("get result for pie failed |"+e);
-        }
-
-        List list = new ArrayList<PieData>();
-        if (result4Pie!=null)
-        {
-            list =toPieDataList(result4Pie);
         }
 
         resultMap.put("errMsg",msg);
         resultMap.put("amountList",list);
+        resultMap.put("resList",resultList);
         return resultMap;
     }
 

@@ -1,13 +1,17 @@
 package com.example.yuetan.model;
 
-//具体时间点的数据
+//作为前端展示的数据
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-public class SpecTimeAmount implements Comparable<SpecTimeAmount>{
+public class ResultList {
+
+    String direction;           //记录方向
 
     int people_amount;          //记录人数
 
@@ -19,8 +23,6 @@ public class SpecTimeAmount implements Comparable<SpecTimeAmount>{
 
     float specific_time;        //录制具体时间点（均为10分钟长度）
 
-    @Override
-    public int compareTo(SpecTimeAmount o) {
-        return (int) (this.getSpecific_time()-o.getSpecific_time());
-    }
+
+
 }
